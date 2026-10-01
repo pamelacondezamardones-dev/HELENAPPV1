@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HelenAPP Mi Voz</title>
+<meta name="theme-color" content="#d1007f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HelenAPP Mi Voz">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --text:#213547;
+  --muted:#64748b;
+  --primary:#2563eb;
+  --primary-soft:#dbeafe;
+  --success:#16a34a;
+  --warning:#f59e0b;
+  --danger:#dc2626;
+  --danger-soft:#fee2e2;
+  --border:#dbe3ec;
+  --shadow:0 8px 24px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea{font:inherit}
+.app{min-height:100vh;display:flex;flex-direction:column}
+header{position:sticky;top:0;z-index:20;background:rgba(246,248,251,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1200px;margin:auto;padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem}
+.brand-badge{width:42px;height:42px;border-radius:14px;background:var(--primary);color:white;display:grid;place-items:center;font-size:1.4rem}
+.status{font-size:.9rem;color:var(--muted)}
+main{width:100%;max-width:1200px;margin:auto;padding:18px 16px 120px}
+.quickbar{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px}
+.quick{border:0;border-radius:16px;padding:16px 10px;font-weight:800;min-height:74px;box-shadow:var(--shadow);background:var(--card);color:var(--text);cursor:pointer}
+.quick.yes{background:#dcfce7;color:#166534}.quick.no{background:#fee2e2;color:#991b1b}.quick.help{background:var(--danger);color:white}.quick.wait{background:#fef3c7;color:#92400e}.quick.say{background:#e0e7ff;color:#3730a3}.quick.write{background:#cffafe;color:#155e75}
+.hero{background:linear-gradient(135deg,#eff6ff,#f8fafc);border:1px solid var(--border);border-radius:24px;padding:18px;box-shadow:var(--shadow);margin-bottom:18px}
+.hero h1{margin:0 0 6px;font-size:clamp(1.45rem,3vw,2.2rem)}
+.hero p{margin:0;color:var(--muted);line-height:1.5}
+.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.category{border:1px solid var(--border);border-radius:20px;padding:20px;background:var(--card);box-shadow:var(--shadow);cursor:pointer;text-align:left;min-height:120px;transition:.15s transform,.15s box-shadow}
+.category:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,23,42,.12)}
+.category .icon{font-size:2rem}.category h3{margin:10px 0 5px;font-size:1.15rem}.category p{margin:0;color:var(--muted);font-size:.95rem}
+.view{display:none}.view.active{display:block}
+.view-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}.back{border:0;background:#e2e8f0;color:#334155;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+.phrase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.phrase{border:1px solid var(--border);background:var(--card);border-radius:18px;padding:14px;min-height:104px;font-weight:750;text-align:left;cursor:pointer;box-shadow:var(--shadow);display:grid;grid-template-columns:64px 1fr 34px;gap:12px;align-items:center}
+.phrase-picto{width:64px;height:64px;border-radius:16px;background:#eef6ff;display:grid;place-items:center;font-size:2.25rem;line-height:1}
+.phrase-text{line-height:1.25;font-size:1.02rem}
+.phrase-sound{font-size:1.25rem;opacity:.7;text-align:center}
+.category{display:grid;grid-template-columns:70px 1fr;column-gap:14px;align-items:center}
+.category .icon{width:64px;height:64px;border-radius:18px;background:#eef6ff;display:grid;place-items:center;font-size:2.25rem;grid-row:1 / span 2}
+.category h3{margin:0 0 5px;font-size:1.15rem}.category p{margin:0;color:var(--muted);font-size:.95rem}
+.quick{display:flex;align-items:center;justify-content:center;gap:9px;font-size:1rem}.quick .picto{font-size:1.55rem}
+.footer-btn .picto{font-size:1.3rem;display:block;margin-bottom:2px}
+.emergency-grid button{display:grid;grid-template-columns:52px 1fr;align-items:center;text-align:left;gap:12px}.emergency-grid .picto{font-size:2rem;text-align:center}
+.action{display:inline-flex;align-items:center;gap:8px}.back{display:inline-flex;align-items:center;gap:7px}
+.writer{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+textarea{width:100%;min-height:130px;border:1px solid var(--border);border-radius:16px;padding:16px;font-size:1.2rem;resize:vertical;background:#fbfdff;color:var(--text)}
+.writer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.action{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer}.speak{background:var(--primary);color:white}.clear{background:#e2e8f0;color:#334155}.fav{background:#fef3c7;color:#92400e}
+.favorites-empty{padding:24px;background:var(--card);border:1px dashed var(--border);border-radius:18px;color:var(--muted);text-align:center}
+.footerbar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);border-top:1px solid var(--border);padding:10px 12px;z-index:30;backdrop-filter:blur(10px)}
+.footer-inner{max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.footer-btn{border:0;border-radius:14px;padding:11px 6px;background:#eef2f7;font-weight:800;color:#334155;cursor:pointer}.footer-btn.emergency{background:var(--danger);color:#fff}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}.modal-card{width:min(650px,100%);max-height:90vh;overflow:auto;background:white;border-radius:24px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.3)}
+.modal-card h2{margin-top:0}.emergency-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.emergency-grid button{border:0;border-radius:16px;padding:18px;background:var(--danger-soft);color:#991b1b;font-weight:850;cursor:pointer}.close-modal{width:100%;margin-top:14px;border:0;border-radius:14px;padding:12px;background:#e2e8f0;font-weight:800;cursor:pointer}
+.toast{position:fixed;right:16px;top:78px;background:#111827;color:white;padding:10px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s;z-index:80}.toast.show{opacity:1}
+.small{font-size:.86rem;color:var(--muted)}
+@media(max-width:900px){.quickbar{grid-template-columns:repeat(3,1fr)}.categories,.phrase-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.header-inner{padding:10px 12px}.status{display:none}main{padding:14px 12px 112px}.quickbar{grid-template-columns:repeat(2,1fr)}.quick{min-height:68px}.categories,.phrase-grid{grid-template-columns:1fr}.category{min-height:auto}.phrase{min-height:92px;grid-template-columns:58px 1fr 30px;padding:12px}.phrase-picto{width:58px;height:58px;font-size:2rem}.footer-inner{grid-template-columns:repeat(5,1fr)}.footer-btn{font-size:.78rem;padding:10px 4px}.emergency-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.install-pwa{border:0;border-radius:12px;padding:10px 14px;background:#d1007f;color:white;font-weight:800;cursor:pointer;display:none}
+.install-pwa.show{display:inline-flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="header-inner">
+    <div class="brand"><div class="brand-badge">🗣️</div><div>HelenAPP Mi Voz<div class="small">Comunicación aumentativa</div></div></div>
+    <div style="display:flex;align-items:center;gap:10px"><button id="installPwa" class="install-pwa">📲 Instalar app</button><div class="status" id="voiceStatus">Voz lista</div></div>
+  </div>
+</header>
+<main>
+  <section id="home" class="view active">
+    <div class="quickbar">
+      <button class="quick yes" onclick="speakText('Sí')"><span class="picto">👍</span><span>Sí</span></button>
+      <button class="quick no" onclick="speakText('No')"><span class="picto">👎</span><span>No</span></button>
+      <button class="quick help" onclick="openEmergency()"><span class="picto">🆘</span><span>Ayuda</span></button>
+      <button class="quick wait" onclick="speakText('Espera un momento, todavía estoy respondiendo')"><span class="picto">✋</span><span>Espera</span></button>
+      <button class="quick say" onclick="speakText('Quiero decir algo')"><span class="picto">🗣️</span><span>Quiero hablar</span></button>
+      <button class="quick write" onclick="showView('writer')"><span class="picto">✍️</span><span>Escribir</span></button>
+    </div>
+    <div class="hero">
+      <h1>¿Qué necesitas comunicar?</h1>
+      <p>Toca una categoría. Cada frase puede reproducirse en voz alta con un solo toque.</p>
+    </div>
+    <div class="categories" id="categoryGrid"></div>
+  </section>
+
+  <section id="phrases" class="view">
+    <div class="view-head"><button class="back" onclick="showView('home')">↩️ <span>Volver</span></button><div><h2 id="phraseTitle" style="margin:0"></h2><div class="small">Toca una frase para decirla en voz alta.</div></div></div>
+    <div class="phrase-grid" id="phraseGrid"></div>
+  </section>
+
+  <section id="writer" class="view">
+    <div class="view-head"><button class="back" onclick="showView('home')">↩️ <span>Volver</span></button><div><h2 style="margin:0">Escribir mensaje</h2><div class="small">Escribe cualquier frase y haz que la aplicación la lea.</div></div></div>
+    <div class="writer">
+      <textarea id="freeText" placeholder="Escribe aquí lo que quieres decir..."></textarea>
+      <div class="writer-actions">
+        <button class="action speak" onclick="speakWritten()">🔊 Hablar</button>
+        <button class="action fav" onclick="saveWrittenFavorite()">⭐ Guardar favorito</button>
+        <button class="action clear" onclick="document.getElementById('freeText').value=''">🧹 Limpiar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="favorites" class="view">
+    <div class="view-head"><button class="back" onclick="showView('home')">↩️ <span>Volver</span></button><div><h2 style="margin:0">Favoritos</h2><div class="small">Tus frases guardadas para acceso rápido.</div></div></div>
+    <div id="favoritesList"></div>
+  </section>
+</main>
+
+<div class="footerbar">
+  <div class="footer-inner">
+    <button class="footer-btn" onclick="showView('home')"><span class="picto">🏠</span>Inicio</button>
+    <button class="footer-btn" onclick="showView('favorites')"><span class="picto">⭐</span>Favoritos</button>
+    <button class="footer-btn" onclick="speakText('Sí')"><span class="picto">👍</span>Sí</button>
+    <button class="footer-btn" onclick="speakText('No')"><span class="picto">👎</span>No</button>
+    <button class="footer-btn emergency" onclick="openEmergency()"><span class="picto">🆘</span>Ayuda</button>
+  </div>
+</div>
+</div>
+
+<div class="modal" id="emergencyModal" role="dialog" aria-modal="true" aria-labelledby="emergencyTitle">
+  <div class="modal-card">
+    <h2 id="emergencyTitle">🚨 Necesito ayuda</h2>
+    <div class="emergency-grid">
+      <button onclick="speakText('No puedo respirar bien')"><span class="picto">🫁</span><span>No puedo respirar bien</span></button>
+      <button onclick="speakText('Me estoy atorando')"><span class="picto">😮‍💨</span><span>Me estoy atorando</span></button>
+      <button onclick="speakText('Tengo mucho dolor')"><span class="picto">🤕</span><span>Tengo mucho dolor</span></button>
+      <button onclick="speakText('Necesito aspiración o ayuda con secreciones')"><span class="picto">💨</span><span>Necesito aspiración / secreciones</span></button>
+      <button onclick="speakText('Me siento muy mal')"><span class="picto">🤒</span><span>Me siento muy mal</span></button>
+      <button onclick="speakText('Llama a mi cuidador o cuidadora')"><span class="picto">📞</span><span>Llama a mi cuidador/a</span></button>
+    </div>
+    <button class="close-modal" onclick="closeEmergency()">❎ Cerrar</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const categories = [
+ {id:'needs',icon:'🩺',title:'Necesidades físicas',desc:'Dolor, posición, respiración, comodidad.',phrases:['Necesito ayuda','Me duele','Me cuesta respirar','Necesito cambiar de posición','Estoy incómodo o incómoda','Tengo frío','Tengo calor','Acomódame la cabeza','Acomódame las piernas','Quiero sentarme','Quiero acostarme','Estoy muy cansado o cansada','Tengo sueño','No puedo dormir','Tengo secreciones','Necesito aspiración','Tengo náuseas','Estoy mareado o mareada','Tengo picazón','Tengo calambres']},
+ {id:'bath',icon:'🚽',title:'Baño e higiene',desc:'Ir al baño, aseo y cuidado personal.',phrases:['Necesito ir al baño','Necesito orinar','Necesito evacuar','Necesito que me cambien','Necesito higiene','Quiero lavarme las manos','Quiero lavarme la cara','Quiero lavarme los dientes','Quiero bañarme','Necesito limpiarme la boca','Tengo la boca seca','Necesito que me acomoden la ropa']},
+ {id:'food',icon:'🥤',title:'Comer y beber',desc:'Hambre, sed, alimentación y deglución.',phrases:['Tengo sed','Tengo la boca seca','Tengo hambre','Quiero agua','Quiero comer','No quiero comer','No quiero más','Más, por favor','Menos','Más lento','Espera antes de darme más','Está muy caliente','Está muy frío','Me cuesta tragar','Me estoy atorando','Necesito limpiarme la boca']},
+ {id:'talk',icon:'💬',title:'Conversación',desc:'Participar, comprender y responder.',phrases:['Quiero decir algo','Sí','No','Quizás','No sé','Estoy de acuerdo','No estoy de acuerdo','Exactamente','Entiendo','No entendí','Explícame nuevamente','Habla más lento','Repítelo, por favor','Espera, todavía no termino','Déjame responder','Dame tiempo','Hazme preguntas de sí o no','Eso no es lo que quería decir','Me equivoqué','Cambiemos de tema','Cuéntame más','¿Qué pasó?','¿Y después?','¿Qué opinas tú?']},
+ {id:'feel',icon:'❤️',title:'Emociones',desc:'Cómo me siento y qué necesito emocionalmente.',phrases:['Estoy feliz','Estoy tranquilo o tranquila','Estoy triste','Estoy preocupado o preocupada','Tengo miedo','Estoy enojado o enojada','Estoy frustrado o frustrada','Estoy aburrido o aburrida','Quiero estar solo o sola','Quiero compañía','Quédate conmigo','Necesito tranquilidad','Necesito silencio','Quiero hablar','Dame un abrazo','Te quiero','Te extraño','Gracias por estar conmigo','No te preocupes']},
+ {id:'people',icon:'👨‍👩‍👧',title:'Personas',desc:'Contactar o preguntar por alguien.',phrases:['Quiero hablar con mi familia','Quiero hablar con mi pareja','Quiero hablar con mis hijos','Quiero hablar con mi cuidador o cuidadora','Quiero hablar con el médico','Quiero hablar con la enfermera','Llama a mi familia','Llama a mi cuidador o cuidadora','¿Dónde está mi familia?','Dile que venga, por favor']},
+ {id:'activities',icon:'🏠',title:'Quiero hacer',desc:'Actividades y entorno cotidiano.',phrases:['Quiero levantarme','Quiero descansar','Quiero dormir','Quiero salir','Quiero ir afuera','Quiero ver televisión','Quiero escuchar música','Quiero leer','Quiero usar el teléfono','Quiero ver fotos','Abre la ventana','Cierra la ventana','Enciende la luz','Apaga la luz','Sube el volumen','Baja el volumen','Cambia el canal','Quiero hacer otra cosa']},
+ {id:'health',icon:'🧑‍⚕️',title:'Salud',desc:'Comunicarme durante una atención sanitaria.',phrases:['Quiero hablar con el médico','Quiero hablar con la enfermera','Explícame qué me van a hacer','No entendí la explicación','Quiero que me expliquen nuevamente','¿Para qué sirve este medicamento?','¿Qué medicamento me están dando?','¿Qué examen me harán?','¿Cuándo podré irme?','Necesito controlar el dolor','Estoy peor que antes','Estoy mejor','Tengo un síntoma nuevo','Quiero participar en la decisión','Necesito hablar en privado','No autorizo eso','Sí autorizo','Quiero que llamen a mi familia','Pregúntame a mí, no a mi acompañante']},
+ {id:'chilenismos',icon:'🇨🇱',title:'Chilenismos',desc:'Frases chilenas para conversar en el día a día.',phrases:['¿Cómo estai?','Aerrs','No wei con la wea','Cachai o no','¿Cachai?','Tiki Taka','Estamos hasta las cachas','Wena la wea','No me weí','Sóplame este ojo','Estamos Liz Taylor','Sí, po','No, po','Ya','Dale','No sé','Más o menos','Al tiro','Espérame un poquito','Qué lata','Pucha','Bacán','Qué buena','Qué fome','Quiero tomar once','Me duele la guata','Quiero pancito','Pide un Uber','Vámonos en micro','Siéntate un ratito']},
+ {id:'favorites',icon:'⭐',title:'Favoritos',desc:'Tus frases más importantes.',special:true}
+];
+
+let currentCategory=null;
+const favKey='miVozFavoritos';
+
+function pictogramFor(text){
+ const t=text.toLowerCase();
+ const rules=[
+  [/^sí$|sí autorizo|de acuerdo|exactamente/, '👍'],
+  [/^no$|no autorizo|no quiero|no sé|no entiend|no puedo dormir|no te preocupes|no estoy de acuerdo/, '👎'],
+  [/ayuda/, '🆘'],[/dolor|me duele/, '🤕'],[/respirar/, '🫁'],[/atorando|tragar/, '😮‍💨'],[/aspiración|secreciones/, '💨'],
+  [/posición|acomódame|acostarme|sentarme|levantarme/, '🛏️'],[/cabeza/, '🙂'],[/piernas/, '🦵'],[/frío/, '🥶'],[/calor/, '🥵'],
+  [/cansad|descansar/, '😴'],[/sueño|dormir/, '🌙'],[/náuseas/, '🤢'],[/maread/, '😵‍💫'],[/picazón/, '🖐️'],[/calambres/, '🦵'],
+  [/baño|orinar/, '🚽'],[/evacuar/, '💩'],[/cambien/, '🧷'],[/higiene|bañarme/, '🚿'],[/lavarme las manos/, '🧼'],[/lavarme la cara/, '🧴'],[/dientes/, '🪥'],[/boca seca|limpiarme la boca/, '👄'],[/ropa/, '👕'],
+  [/sed|agua/, '🥤'],[/hambre|comer/, '🍽️'],[/más, por favor/, '➕'],[/menos/, '➖'],[/más lento|dame tiempo|espera/, '⏳'],[/caliente/, '♨️'],[/muy frío/, '🧊'],
+  [/quiero decir|quiero hablar|hablar con|cuéntame|qué pasó|y después|qué opinas/, '🗣️'],[/quizás/, '🤔'],[/entiendo/, '💡'],[/explícame|repítelo/, '🔁'],[/preguntas de sí o no/, '❓'],[/me equivoqué|no es lo que quería decir/, '↩️'],[/cambiemos de tema/, '🔀'],
+  [/feliz/, '😊'],[/tranquil/, '😌'],[/triste/, '😢'],[/preocupad/, '😟'],[/miedo/, '😨'],[/enojad/, '😠'],[/frustrad/, '😣'],[/aburrid/, '🥱'],[/solo|sola/, '🚪'],[/compañía|quédate conmigo/, '🤝'],[/silencio/, '🤫'],[/abrazo/, '🤗'],[/te quiero/, '❤️'],[/te extraño/, '💞'],[/gracias/, '🙏'],
+  [/familia/, '👨‍👩‍👧'],[/pareja/, '💑'],[/hijos/, '👧'],[/cuidador/, '🧑‍🦽'],[/médico/, '🧑‍⚕️'],[/enfermera/, '👩‍⚕️'],[/dile que venga|dónde está|llama a/, '📞'],
+  [/salir|afuera/, '🚪'],[/televisión|canal/, '📺'],[/música|volumen/, '🎵'],[/leer/, '📖'],[/teléfono/, '📱'],[/fotos/, '🖼️'],[/ventana/, '🪟'],[/luz/, '💡'],[/otra cosa/, '🔄'],
+  [/medicamento/, '💊'],[/examen/, '🧪'],[/cuándo podré irme/, '🏠'],[/peor/, '📉'],[/estoy mejor/, '📈'],[/síntoma nuevo/, '🆕'],[/decisión/, '🗳️'],[/privado/, '🔒'],[/acompañante/, '🙋'],
+  [/limpiar|limpie/, '🧹']
+ ];
+ for(const [re,icon] of rules){if(re.test(t)) return icon;}
+ return '💬';
+}
+
+function phraseMarkup(text,endIcon='🔊'){
+ const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ return `<span class="phrase-picto" aria-hidden="true">${pictogramFor(text)}</span><span class="phrase-text">${safe}</span><span class="phrase-sound" aria-hidden="true">${endIcon}</span>`;
+}
+
+function init(){
+ const grid=document.getElementById('categoryGrid');
+ categories.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='category';
+  b.innerHTML=`<div class="icon" aria-hidden="true">${c.icon}</div><div><h3>${c.title}</h3><p>${c.desc}</p></div>`;
+  b.onclick=()=>c.special?showView('favorites'):openCategory(c.id);
+  grid.appendChild(b);
+ });
+ renderFavorites();
+ loadVoices();
+}
+
+function showView(id){
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ if(id==='favorites') renderFavorites();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function openCategory(id){
+ currentCategory=categories.find(c=>c.id===id);
+ document.getElementById('phraseTitle').textContent=currentCategory.icon+' '+currentCategory.title;
+ const grid=document.getElementById('phraseGrid');
+ grid.innerHTML='';
+ currentCategory.phrases.forEach(p=>{
+  const b=document.createElement('button');b.className='phrase';
+  b.innerHTML=phraseMarkup(p,'🔊');
+  b.onclick=()=>speakText(p);
+  b.oncontextmenu=(e)=>{e.preventDefault();addFavorite(p)};
+  grid.appendChild(b);
+ });
+ showView('phrases');
+}
+
+let voices=[];
+function loadVoices(){voices=speechSynthesis.getVoices();document.getElementById('voiceStatus').textContent=voices.length?'Voz lista':'Voz del sistema';}
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=loadVoices;}
+function getSpanishVoice(){
+ voices=speechSynthesis.getVoices();
+ return voices.find(v=>/es[-_](419|MX|US|AR|CO|PE|CL)/i.test(v.lang)) || voices.find(v=>/^es/i.test(v.lang) && !/es[-_]ES/i.test(v.lang)) || voices.find(v=>/^es/i.test(v.lang)) || voices[0];
+}
+function speakText(text){
+ if(!('speechSynthesis' in window)){showToast('Este navegador no admite voz sintetizada.');return;}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);u.lang='es-419';u.rate=1.03;u.pitch=1;u.volume=1;const v=getSpanishVoice();if(v)u.voice=v;
+ speechSynthesis.speak(u);
+}
+function speakWritten(){const t=document.getElementById('freeText').value.trim();if(!t){showToast('Escribe un mensaje primero.');return;}speakText(t)}
+function saveWrittenFavorite(){const t=document.getElementById('freeText').value.trim();if(!t){showToast('Escribe una frase primero.');return;}addFavorite(t)}
+function getFavorites(){try{return JSON.parse(localStorage.getItem(favKey))||[]}catch{return[]}}
+function addFavorite(text){let f=getFavorites();if(!f.includes(text)){f.unshift(text);localStorage.setItem(favKey,JSON.stringify(f));showToast('Frase guardada en favoritos.')}else showToast('Ya está en favoritos.');renderFavorites()}
+function removeFavorite(text){let f=getFavorites().filter(x=>x!==text);localStorage.setItem(favKey,JSON.stringify(f));renderFavorites()}
+function renderFavorites(){
+ const box=document.getElementById('favoritesList');if(!box)return;
+ const f=getFavorites();
+ if(!f.length){box.innerHTML='<div class="favorites-empty">Aún no hay favoritos. Mantén presionada una frase con clic derecho en PC o guarda una frase escrita.</div>';return;}
+ const grid=document.createElement('div');grid.className='phrase-grid';
+ f.forEach(p=>{const b=document.createElement('button');b.className='phrase';b.innerHTML=phraseMarkup(p,'⭐');b.onclick=()=>speakText(p);b.oncontextmenu=(e)=>{e.preventDefault();removeFavorite(p)};grid.appendChild(b)});
+ box.innerHTML='';box.appendChild(grid);
+}
+function openEmergency(){document.getElementById('emergencyModal').classList.add('show')}
+function closeEmergency(){document.getElementById('emergencyModal').classList.remove('show')}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeEmergency();if(e.key==='1'&&e.altKey)speakText('Sí');if(e.key==='2'&&e.altKey)speakText('No');if(e.key==='3'&&e.altKey)openEmergency();});
+
+let deferredInstallPrompt=null;
+const installBtn=document.getElementById('installPwa');
+window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredInstallPrompt=e;installBtn.classList.add('show');});
+installBtn.addEventListener('click',async()=>{
+ if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;installBtn.classList.remove('show');}
+ else { showToast('En iPhone: Compartir → Añadir a pantalla de inicio.'); }
+});
+window.addEventListener('appinstalled',()=>{installBtn.classList.remove('show');showToast('HelenAPP Mi Voz instalada.');});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+
+init();
+</script>
+</body>
+</html>
